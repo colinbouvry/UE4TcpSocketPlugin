@@ -15,22 +15,25 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FTcpSocketConnectDelegate, int32, ConnectionId
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FTcpSocketReceivedMessageDelegate, int32, ConnectionId, UPARAM(ref) TArray<uint8>&, Message);
 
 UCLASS(Blueprintable, BlueprintType)
-class TCPSOCKETPLUGIN_API ATcpSocketConnection : public AActor
+class TCPSOCKETPLUGIN_API UTcpSocketConnection : public UObject
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ATcpSocketConnection();
+	UTcpSocketConnection();
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	UFUNCTION(BlueprintCallable, Category = "Socket")
+	void BeginPlay();
+	UFUNCTION(BlueprintCallable, Category = "Socket")
+	void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable, Category = "Socket")
+	void Tick(float DeltaTime);
 
 	/* Returns the ID of the new connection. */
 	UFUNCTION(BlueprintCallable, Category = "Socket")
@@ -58,13 +61,13 @@ public:
 	*/
 
 	//UFUNCTION(Category = "Socket")	
-	void ExecuteOnConnected(int32 WorkerId, TWeakObjectPtr<ATcpSocketConnection> thisObj);
+	void ExecuteOnConnected(int32 WorkerId, TWeakObjectPtr<UTcpSocketConnection> thisObj);
 
 	//UFUNCTION(Category = "Socket")
-	void ExecuteOnDisconnected(int32 WorkerId, TWeakObjectPtr<ATcpSocketConnection> thisObj);
+	void ExecuteOnDisconnected(int32 WorkerId, TWeakObjectPtr<UTcpSocketConnection> thisObj);
 
 	//UFUNCTION(Category = "Socket")
-	void ExecuteOnMessageReceived(int32 ConnectionId, TWeakObjectPtr<ATcpSocketConnection> thisObj);
+	void ExecuteOnMessageReceived(int32 ConnectionId, TWeakObjectPtr<UTcpSocketConnection> thisObj);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Append Bytes", CommutativeAssociativeBinaryOperator = "true"), Category = "Socket")
 	static TArray<uint8> Concat_BytesBytes(TArray<uint8> A, TArray<uint8> B);
@@ -159,7 +162,7 @@ private:
 	class FSocket* Socket = nullptr;
 	FString ipAddress;
 	int port;
-	TWeakObjectPtr<ATcpSocketConnection> ThreadSpawnerActor;
+	TWeakObjectPtr<UTcpSocketConnection> ThreadSpawnerActor;
 	int32 id;
 	int32 RecvBufferSize;
 	int32 ActualRecvBufferSize;
@@ -175,7 +178,7 @@ private:
 public:
 
 	//Constructor / Destructor
-	FTcpSocketWorker(FString inIp, const int32 inPort, TWeakObjectPtr<ATcpSocketConnection> InOwner, int32 inId, int32 inRecvBufferSize, int32 inSendBufferSize, float inTimeBetweenTicks);
+	FTcpSocketWorker(FString inIp, const int32 inPort, TWeakObjectPtr<UTcpSocketConnection> InOwner, int32 inId, int32 inRecvBufferSize, int32 inSendBufferSize, float inTimeBetweenTicks);
 	virtual ~FTcpSocketWorker();
 
 	/*  Starts processing of the connection. Needs to be called immediately after construction	 */

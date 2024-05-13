@@ -13,21 +13,21 @@
 #include "TcpSocketSettings.h"
 
 // Sets default values
-ATcpSocketConnection::ATcpSocketConnection()
+UTcpSocketConnection::UTcpSocketConnection()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void ATcpSocketConnection::BeginPlay()
+void UTcpSocketConnection::BeginPlay()
 {
-	Super::BeginPlay();	
+	//Super::BeginPlay();	
 }
 
-void ATcpSocketConnection::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UTcpSocketConnection::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
+	//Super::EndPlay(EndPlayReason);
 	TArray<int32> keys;
 	TcpWorkers.GetKeys(keys);
 
@@ -38,12 +38,12 @@ void ATcpSocketConnection::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 // Called every frame
-void ATcpSocketConnection::Tick(float DeltaTime)
+void UTcpSocketConnection::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	//Super::Tick(DeltaTime);
 }
 
-void ATcpSocketConnection::Connect(const FString& ipAddress, int32 port, const FTcpSocketDisconnectDelegate& OnDisconnected, const FTcpSocketConnectDelegate& OnConnected,
+void UTcpSocketConnection::Connect(const FString& ipAddress, int32 port, const FTcpSocketDisconnectDelegate& OnDisconnected, const FTcpSocketConnectDelegate& OnConnected,
 	const FTcpSocketReceivedMessageDelegate& OnMessageReceived, int32& ConnectionId)
 {
 	DisconnectedDelegate = OnDisconnected;
@@ -53,13 +53,13 @@ void ATcpSocketConnection::Connect(const FString& ipAddress, int32 port, const F
 	ConnectionId = NextConnectionId;
 	NextConnectionId++;
 
-	TWeakObjectPtr<ATcpSocketConnection> thisWeakObjPtr = TWeakObjectPtr<ATcpSocketConnection>(this);
+	TWeakObjectPtr<UTcpSocketConnection> thisWeakObjPtr = TWeakObjectPtr<UTcpSocketConnection>(this);
 	TSharedRef<FTcpSocketWorker> worker(new FTcpSocketWorker(ipAddress, port, thisWeakObjPtr, ConnectionId, ReceiveBufferSize, SendBufferSize, TimeBetweenTicks));
 	TcpWorkers.Add(ConnectionId, worker);
 	worker->Start();
 }
 
-void ATcpSocketConnection::Disconnect(int32 ConnectionId)
+void UTcpSocketConnection::Disconnect(int32 ConnectionId)
 {	
 	auto worker = TcpWorkers.Find(ConnectionId);
 	if (worker)
@@ -70,7 +70,7 @@ void ATcpSocketConnection::Disconnect(int32 ConnectionId)
 	}
 }
 
-bool ATcpSocketConnection::SendData(int32 ConnectionId /*= 0*/, TArray<uint8> DataToSend)
+bool UTcpSocketConnection::SendData(int32 ConnectionId /*= 0*/, TArray<uint8> DataToSend)
 {
 	if (TcpWorkers.Contains(ConnectionId))
 	{
@@ -91,7 +91,7 @@ bool ATcpSocketConnection::SendData(int32 ConnectionId /*= 0*/, TArray<uint8> Da
 	return false;
 }
 
-void ATcpSocketConnection::ExecuteOnMessageReceived(int32 ConnectionId, TWeakObjectPtr<ATcpSocketConnection> thisObj)
+void UTcpSocketConnection::ExecuteOnMessageReceived(int32 ConnectionId, TWeakObjectPtr<UTcpSocketConnection> thisObj)
 {
 	// the second check is for when we quit PIE, we may get a message about a disconnect, but it's too late to act on it, because the thread has already been killed
 	if (!thisObj.IsValid())
@@ -109,7 +109,7 @@ void ATcpSocketConnection::ExecuteOnMessageReceived(int32 ConnectionId, TWeakObj
 	MessageReceivedDelegate.ExecuteIfBound(ConnectionId, msg);
 }
 
-TArray<uint8> ATcpSocketConnection::Concat_BytesBytes(TArray<uint8> A, TArray<uint8> B)
+TArray<uint8> UTcpSocketConnection::Concat_BytesBytes(TArray<uint8> A, TArray<uint8> B)
 {
 	TArray<uint8> ArrayResult;
 	ArrayResult.SetNumUninitialized(A.Num() + B.Num());
@@ -118,12 +118,12 @@ TArray<uint8> ATcpSocketConnection::Concat_BytesBytes(TArray<uint8> A, TArray<ui
 	return ArrayResult;
 }
 
-TArray<uint8> ATcpSocketConnection::Conv_ByteToBytes(uint8 InByte)
+TArray<uint8> UTcpSocketConnection::Conv_ByteToBytes(uint8 InByte)
 {
 	return TArray { InByte };
 }
 
-TArray<uint8> ATcpSocketConnection::Conv_ShortToBytes(int16 InShort)
+TArray<uint8> UTcpSocketConnection::Conv_ShortToBytes(int16 InShort)
 {
 	TArray<uint8> result;
 	result.SetNumUninitialized(2);
@@ -131,7 +131,7 @@ TArray<uint8> ATcpSocketConnection::Conv_ShortToBytes(int16 InShort)
 	return result;
 }
 
-TArray<uint8> ATcpSocketConnection::Conv_IntToBytes(int32 InInt)
+TArray<uint8> UTcpSocketConnection::Conv_IntToBytes(int32 InInt)
 {
 	TArray<uint8> result;
 	result.SetNumUninitialized(4);
@@ -139,7 +139,7 @@ TArray<uint8> ATcpSocketConnection::Conv_IntToBytes(int32 InInt)
 	return result;
 }
 
-TArray<uint8> ATcpSocketConnection::Conv_FloatToBytes(float InFloat)
+TArray<uint8> UTcpSocketConnection::Conv_FloatToBytes(float InFloat)
 {
 	TArray<uint8> result;
 	result.SetNumUninitialized(4);
@@ -147,7 +147,7 @@ TArray<uint8> ATcpSocketConnection::Conv_FloatToBytes(float InFloat)
 	return result;
 }
 
-TArray<uint8> ATcpSocketConnection::Conv_LongToBytes(int64 InLong)
+TArray<uint8> UTcpSocketConnection::Conv_LongToBytes(int64 InLong)
 {
 	TArray<uint8> result;
 	result.SetNumUninitialized(8);
@@ -155,7 +155,7 @@ TArray<uint8> ATcpSocketConnection::Conv_LongToBytes(int64 InLong)
 	return result;
 }
 
-TArray<uint8> ATcpSocketConnection::Conv_DoubleToBytes(double InDouble)
+TArray<uint8> UTcpSocketConnection::Conv_DoubleToBytes(double InDouble)
 {
 	TArray<uint8> result;
 	result.SetNumUninitialized(8);
@@ -163,7 +163,7 @@ TArray<uint8> ATcpSocketConnection::Conv_DoubleToBytes(double InDouble)
 	return result;
 }
 
-TArray<uint8> ATcpSocketConnection::Conv_StringToBytes(const FString& InStr)
+TArray<uint8> UTcpSocketConnection::Conv_StringToBytes(const FString& InStr)
 {
 	FTCHARToUTF8 Convert(*InStr);
 	int bytesLength = Convert.Length(); //length of the utf-8 string in bytes (when non-latin letters are used, it's longer than just the number of characters)
@@ -173,7 +173,7 @@ TArray<uint8> ATcpSocketConnection::Conv_StringToBytes(const FString& InStr)
 	return result;
 }
 
-uint8 ATcpSocketConnection::Message_ReadByte(TArray<uint8>& Message)
+uint8 UTcpSocketConnection::Message_ReadByte(TArray<uint8>& Message)
 {
 	if (Message.Num() < 1)
 	{
@@ -186,7 +186,7 @@ uint8 ATcpSocketConnection::Message_ReadByte(TArray<uint8>& Message)
 	return result;
 }
 
-bool ATcpSocketConnection::Message_ReadBytes(int32 NumBytes, TArray<uint8>& Message, TArray<uint8>& returnArray)
+bool UTcpSocketConnection::Message_ReadBytes(int32 NumBytes, TArray<uint8>& Message, TArray<uint8>& returnArray)
 {
 	if (Message.Num() < NumBytes)
 	{
@@ -200,7 +200,7 @@ bool ATcpSocketConnection::Message_ReadBytes(int32 NumBytes, TArray<uint8>& Mess
 	return true;
 }
 
-int16 ATcpSocketConnection::Message_ReadShort(TArray<uint8>& Message)
+int16 UTcpSocketConnection::Message_ReadShort(TArray<uint8>& Message)
 {
 	if (Message.Num() < 2)
 	{
@@ -215,7 +215,7 @@ int16 ATcpSocketConnection::Message_ReadShort(TArray<uint8>& Message)
 	return result;
 }
 
-int32 ATcpSocketConnection::Message_ReadInt(TArray<uint8>& Message)
+int32 UTcpSocketConnection::Message_ReadInt(TArray<uint8>& Message)
 {
 	if (Message.Num() < 4)
 	{
@@ -230,7 +230,7 @@ int32 ATcpSocketConnection::Message_ReadInt(TArray<uint8>& Message)
 	return result;
 }
 
-float ATcpSocketConnection::Message_ReadFloat(TArray<uint8>& Message)
+float UTcpSocketConnection::Message_ReadFloat(TArray<uint8>& Message)
 {
 	if (Message.Num() < 4)
 	{
@@ -245,7 +245,7 @@ float ATcpSocketConnection::Message_ReadFloat(TArray<uint8>& Message)
 	return result;
 }
 
-int64 ATcpSocketConnection::Message_ReadLong(TArray<uint8>& Message)
+int64 UTcpSocketConnection::Message_ReadLong(TArray<uint8>& Message)
 {
 	if (Message.Num() < 8)
 	{
@@ -260,7 +260,7 @@ int64 ATcpSocketConnection::Message_ReadLong(TArray<uint8>& Message)
 	return result;
 }
 
-double ATcpSocketConnection::Message_ReadDouble(TArray<uint8>& Message)
+double UTcpSocketConnection::Message_ReadDouble(TArray<uint8>& Message)
 {
 	if (Message.Num() < 8)
 	{
@@ -275,7 +275,7 @@ double ATcpSocketConnection::Message_ReadDouble(TArray<uint8>& Message)
 	return result;
 }
 
-FString ATcpSocketConnection::Message_ReadString(TArray<uint8>& Message, int32 BytesLength)
+FString UTcpSocketConnection::Message_ReadString(TArray<uint8>& Message, int32 BytesLength)
 {
 	if (BytesLength <= 0)
 	{
@@ -295,14 +295,14 @@ FString ATcpSocketConnection::Message_ReadString(TArray<uint8>& Message, int32 B
 	return FString(UTF8_TO_TCHAR(cstr.c_str()));
 }
 
-bool ATcpSocketConnection::isConnected(int32 ConnectionId)
+bool UTcpSocketConnection::isConnected(int32 ConnectionId)
 {
 	if (TcpWorkers.Contains(ConnectionId))
 		return TcpWorkers[ConnectionId]->isConnected();
 	return false;
 }
 
-void ATcpSocketConnection::PrintToConsole(FString Str, bool Error)
+void UTcpSocketConnection::PrintToConsole(FString Str, bool Error)
 {
 	if (auto tcpSocketSettings = GetDefault<UTcpSocketSettings>())
 	{
@@ -319,7 +319,7 @@ void ATcpSocketConnection::PrintToConsole(FString Str, bool Error)
 	}
 }
 
-void ATcpSocketConnection::ExecuteOnConnected(int32 WorkerId, TWeakObjectPtr<ATcpSocketConnection> thisObj)
+void UTcpSocketConnection::ExecuteOnConnected(int32 WorkerId, TWeakObjectPtr<UTcpSocketConnection> thisObj)
 {
 	if (!thisObj.IsValid())
 		return;
@@ -327,7 +327,7 @@ void ATcpSocketConnection::ExecuteOnConnected(int32 WorkerId, TWeakObjectPtr<ATc
 	ConnectedDelegate.ExecuteIfBound(WorkerId);
 }
 
-void ATcpSocketConnection::ExecuteOnDisconnected(int32 WorkerId, TWeakObjectPtr<ATcpSocketConnection> thisObj)
+void UTcpSocketConnection::ExecuteOnDisconnected(int32 WorkerId, TWeakObjectPtr<UTcpSocketConnection> thisObj)
 {
 	if (!thisObj.IsValid())
 		return;
@@ -345,7 +345,7 @@ bool FTcpSocketWorker::isConnected()
 	return bConnected;
 }
 
-FTcpSocketWorker::FTcpSocketWorker(FString inIp, const int32 inPort, TWeakObjectPtr<ATcpSocketConnection> InOwner, int32 inId, int32 inRecvBufferSize, int32 inSendBufferSize, float inTimeBetweenTicks)
+FTcpSocketWorker::FTcpSocketWorker(FString inIp, const int32 inPort, TWeakObjectPtr<UTcpSocketConnection> InOwner, int32 inId, int32 inRecvBufferSize, int32 inSendBufferSize, float inTimeBetweenTicks)
 	: ipAddress(inIp)
 	, port(inPort)
 	, ThreadSpawnerActor(InOwner)
@@ -359,7 +359,7 @@ FTcpSocketWorker::FTcpSocketWorker(FString inIp, const int32 inPort, TWeakObject
 
 FTcpSocketWorker::~FTcpSocketWorker()
 {
-	AsyncTask(ENamedThreads::GameThread, []() {	ATcpSocketConnection::PrintToConsole("Tcp socket thread was destroyed.", false); });
+	AsyncTask(ENamedThreads::GameThread, []() {	UTcpSocketConnection::PrintToConsole("Tcp socket thread was destroyed.", false); });
 	Stop();
 	if (Thread)
 	{
@@ -402,7 +402,7 @@ bool FTcpSocketWorker::Init()
 
 uint32 FTcpSocketWorker::Run()
 {
-	AsyncTask(ENamedThreads::GameThread, []() {	ATcpSocketConnection::PrintToConsole("Starting Tcp socket thread.", false); });
+	AsyncTask(ENamedThreads::GameThread, []() {	UTcpSocketConnection::PrintToConsole("Starting Tcp socket thread.", false); });
 
 	while (bRun)
 	{
@@ -436,7 +436,7 @@ uint32 FTcpSocketWorker::Run()
 			}
 			else 
 			{
-				AsyncTask(ENamedThreads::GameThread, []() { ATcpSocketConnection::PrintToConsole(FString::Printf(TEXT("Couldn't connect to server. TcpSocketConnection.cpp: line %d"), __LINE__), true); });
+				AsyncTask(ENamedThreads::GameThread, []() { UTcpSocketConnection::PrintToConsole(FString::Printf(TEXT("Couldn't connect to server. TcpSocketConnection.cpp: line %d"), __LINE__), true); });
 				bRun = false;				
 			}
 			continue;
@@ -444,7 +444,7 @@ uint32 FTcpSocketWorker::Run()
 
 		if (!Socket)
 		{
-			AsyncTask(ENamedThreads::GameThread, []() { ATcpSocketConnection::PrintToConsole(FString::Printf(TEXT("Socket is null. TcpSocketConnection.cpp: line %d"), __LINE__), true); });
+			AsyncTask(ENamedThreads::GameThread, []() { UTcpSocketConnection::PrintToConsole(FString::Printf(TEXT("Socket is null. TcpSocketConnection.cpp: line %d"), __LINE__), true); });
 			bRun = false;
 			continue;
 		}
@@ -489,7 +489,7 @@ uint32 FTcpSocketWorker::Run()
 				break;
 			}
 
-			AsyncTask(ENamedThreads::GameThread, []() { ATcpSocketConnection::PrintToConsole("Pending data", false); });
+			AsyncTask(ENamedThreads::GameThread, []() { UTcpSocketConnection::PrintToConsole("Pending data", false); });
 
 			receivedData.SetNumUninitialized(BytesReadTotal + PendingDataSize);
 
@@ -499,7 +499,7 @@ uint32 FTcpSocketWorker::Run()
 				// ISocketSubsystem* SocketSubsystem = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
 				// error code: (int32)SocketSubsystem->GetLastErrorCode()
 				AsyncTask(ENamedThreads::GameThread, []() {
-					ATcpSocketConnection::PrintToConsole(FString::Printf(TEXT("In progress read failed. TcpSocketConnection.cpp: line %d"), __LINE__), true);
+					UTcpSocketConnection::PrintToConsole(FString::Printf(TEXT("In progress read failed. TcpSocketConnection.cpp: line %d"), __LINE__), true);
 				});
 				break;
 			}
@@ -524,7 +524,7 @@ uint32 FTcpSocketWorker::Run()
 		float timeToSleep = TimeBetweenTicks - secondsThisTickTook;
 		if (timeToSleep > 0.f)
 		{
-			//AsyncTask(ENamedThreads::GameThread, [timeToSleep]() { ATcpSocketConnection::PrintToConsole(FString::Printf(TEXT("Sleeping: %f seconds"), timeToSleep), false); });
+			//AsyncTask(ENamedThreads::GameThread, [timeToSleep]() { UTcpSocketConnection::PrintToConsole(FString::Printf(TEXT("Sleeping: %f seconds"), timeToSleep), false); });
 			FPlatformProcess::Sleep(timeToSleep);
 		}
 	}
